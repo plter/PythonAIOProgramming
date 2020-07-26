@@ -1,0 +1,16 @@
+{
+  "name": "aiohttp_template_pages",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install_dependencies": "npm install --save jquery bootstrap --registry=https://registry.npm.taobao.org"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^4.5.0",
+    "jquery": "^3.5.1"
+  }
+}

@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  config_route_one_by_one:
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: python3 ./config_route_one_by_one.py
+
+  config_route_with_decorator:
+    build: .
+    ports:
+      - "8081:8080"
+    restart: always
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: python3 ./config_route_with_decorator.py
+
+  config_routes:
+    build: .
+    ports:
+      - "8082:8080"
+    restart: always
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: python3 ./config_routes.py
+
+  pages:
+    build: .
+    ports:
+      - "8083:8080"
+    restart: always
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: python3 ./pages.py

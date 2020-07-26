@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: python3 ./server.py

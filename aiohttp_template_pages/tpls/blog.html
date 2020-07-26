@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+这是博客页面
+<div>
+    {% for p in posts%}
+    <div>
+        <div class="font-weight-bold">{{ p.title }}</div>
+        <div>{{ p.content }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
