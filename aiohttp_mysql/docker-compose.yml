@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:8000"
+    restart: always
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: python3 ./server.py
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pwd
+    volumes:
+      - "./db_data:/var/lib/mysql"
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
