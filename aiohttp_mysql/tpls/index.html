@@ -1,39 +1,44 @@
 {% extends "layout.html" %}
 {% block body %}
-    <div class="card" style="margin-top: 2rem;">
-        <div class="card-header" style="position: relative;">
-            <a href="/edit" style="position: absolute;right:1rem;top:0;font-size: 20pt">
-                +
-            </a>
-            学生列表
-        </div>
-        <div>
-            <table class="table table-striped" style="margin-bottom: 0">
-                <thead>
-                <tr>
-                    <th>id</th>
-                    <th>姓名</th>
-                    <th>年龄</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for s in students %}
-                    <tr>
-                        <td>{{ s.id }}</td>
-                        <td>{{ s.student_name }}</td>
-                        <td>{{ s.student_age }}</td>
-                        <td style="width: 10rem;text-align: center;">
-                            <a href="/edit?id={{ s.id }}" class="btn btn-primary btn-sm">编辑</a>
-                            <a href="/remove?id={{ s.id }}" class="btn-delete-item btn btn-danger btn-sm">
-                                删除
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header" style="position: relative;">
+        <a href="/edit"
+           style="position: absolute;right:1rem;top:0;font-size: 20pt">
+            +
+        </a>
+        学生列表
     </div>
-    <script src="/static/index.js"></script>
+    <div>
+        <table class="table table-striped" style="margin-bottom: 0">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in students %}
+            <tr>
+                <td>{{ s.id }}</td>
+                <td>{{ s.student_name }}</td>
+                <td>{{ s.student_age }}</td>
+                <td style="width: 10rem;text-align: center;">
+                    <a href="/edit?id={{ s.id }}"
+                       class="btn btn-primary btn-sm">
+                        编辑
+                    </a>
+                    <a href="/remove?id={{ s.id }}"
+                       class="btn-delete-item btn btn-danger btn-sm">
+                        删除
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="/static/index.js"></script>
 {% endblock %}

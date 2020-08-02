@@ -21,7 +21,7 @@ async def index(req, db: SAConnection):
 async def edit(req: web.Request, db: SAConnection):
     student_id = req.query.getone("id") if "id" in req.query else None
     student = None
-    if student_id:
+    if student_id:  # 如果页面有传入student_id，则启用编辑，否则执行添加操作
         student_result: result.ResultProxy = await db.execute(
             tables.student.select().where(tables.student.columns.id == student_id)
         )
@@ -38,11 +38,11 @@ async def edit(req: web.Request, db: SAConnection):
     student_id = params['student_id'] if "student_id" in params else None
     if not student_name or not student_age:
         return web.Response(text="Parameters error")
-    if student_id:
+    if student_id:  # 如果有 student_id，则尝试查找这条数据
         ret: result.ResultProxy = await db.execute(
             tables.student.select().where(tables.student.columns.id == student_id)
         )
-        if ret.rowcount:
+        if ret.rowcount:  # 如果存在这条记录，更新这条记录
             conn = await db.begin()
             await db.execute(
                 tables.student.update()
@@ -51,6 +51,7 @@ async def edit(req: web.Request, db: SAConnection):
             )
             await conn.commit()
             raise web.HTTPFound("/")
+    # 能够执行到这里，说明指定student_id的记录不存在或者没有指定student_id，则执行添加新数据操作
     conn = await db.begin()
     await db.execute(
         tables.student.insert()
@@ -66,7 +67,7 @@ async def remove(req: web.Request, db: SAConnection):
     student_id = req.query.getone("id") if "id" in req.query else None
     if student_id:
         conn = await db.begin()
-        await db.execute(
+        await db.execute(  # 根据student_id删除数据
             tables.student.delete().where(tables.student.columns.id == student_id)
         )
         await conn.commit()
@@ -77,11 +78,13 @@ async def remove(req: web.Request, db: SAConnection):
 
 if __name__ == '__main__':
     app = web.Application()
+    # 配置模板文件根目录
     aiohttp_jinja2.setup(
         app,
         loader=jinja2.FileSystemLoader(config.TEMPLATE_ROOT)
     )
     app.add_routes(routes)
+    # 配置静态文件目录
     for m in config.STATIC_MAPPING:
         app.router.add_static(m['web_path'], m['dir'])
     web.run_app(app, port=8000)
