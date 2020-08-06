@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  web:
+    build: ./web_env
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - "./server:/opt/server"
