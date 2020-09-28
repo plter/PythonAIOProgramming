@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    restart: always
+    tty: true
+    ports:
+      - "8888:8888"
+    volumes:
+      - ".:/opt/tornado_http_server"
+    working_dir: "/opt/tornado_http_server"
+    command: python server.py
