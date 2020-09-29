@@ -7,9 +7,9 @@ import asyncio
 
 async def handle_echo(reader, writer):
     """
-    handle_echo 向客户端发送5段数据，时间间隔为1s，之后关闭客户端连接。
-    :param reader: reader是一个StreamReader对象，用于读取客户端传来的数据。
-    :param writer: writer是一个StreamWriter对象，用于向客户端发送数据。
+    handle_echo 向客户端发送5段数据，时间间隔为1s，之后关闭客户端连接
+    :param reader: reader是一个StreamReader对象，用于读取客户端传来的数据
+    :param writer: writer是一个StreamWriter对象，用于向客户端发送数据
     """
 
     # 向客户端输出5次数据
@@ -27,7 +27,7 @@ async def main():
     # 声明端口
     port = 8888
     # 启动服务器并注册一个回调函数用于侦听客户端连接，当有一个新的
-    # 客户端建立连接时，将触发handle_echo函数。
+    # 客户端建立连接时，将触发handle_echo函数
     server = await asyncio.start_server(
         # 客户端连接的回调函数
         handle_echo,

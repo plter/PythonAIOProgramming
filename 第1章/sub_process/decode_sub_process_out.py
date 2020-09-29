@@ -13,10 +13,10 @@ async def main():
     )
 
     # 使用communicate函数与子进程通信，并等待子进程结束，在子进程
-    # 结束后获得子进程的输出信息。
+    # 结束后获得子进程的输出信息
     stdout, stderr = await p.communicate()
     # 将信息以gbk（gb2312是简体中文，gbk同时兼容简体中文与繁体中文）
-    # 的编码方式解码成字符串并输出。
+    # 的编码方式解码成字符串并输出
     print(stdout.decode("gbk"))
 
 
