@@ -8,17 +8,21 @@ import os
 SERVER_VERSION = '2020.02.15'
 # 服务器根目录
 SERVER_ROOT = os.path.dirname(os.path.abspath(__file__))
+# 应用所在目录的目录名
+APP_DIR_NAME = "app"
 # 应用根目录
-APP_ROOT = os.path.join(SERVER_ROOT, "app")
+APP_ROOT = os.path.join(SERVER_ROOT, APP_DIR_NAME)
+# 控制器所在的目录的目录名
+CONTROLLERS_DIR_NAME = "controllers"
 # 控制器所在目录
-CONTROLLERS_ROOT = os.path.join(APP_ROOT, "controllers")
+CONTROLLERS_ROOT = os.path.join(APP_ROOT, CONTROLLERS_DIR_NAME)
 # 静态文件根目录
 STATIC_FILES_ROOT = os.path.join(APP_ROOT, "static")
 # 模板文件根目录
 VIEWS_ROOT = os.path.join(APP_ROOT, 'views')
 # 语言文件根目录
 LANGUAGES_ROOT = os.path.join(APP_ROOT, 'languages')
-# 默认语言，如果不设置，则服务器根据浏览器自动选择语言
+# 默认语言
 LANGUAGE = None  # "zh-CN", "en-US"
 
 # 服务器名称
@@ -41,7 +45,7 @@ LOG_LEVEL = 10
 
 # 在用户未指定控制器的情况下由该默认控制器接受请求
 DEFAULT_CONTROLLER = "default"
-# 在用户未指定控制器函数的情况下由该函数接受请求
+# 在用户未指定控制器函数的情况下由该动作（action）接受请求
 DEFAULT_ACTION = 'index'
 
 # 应用版本
