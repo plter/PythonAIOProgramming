@@ -2,10 +2,9 @@
 第8章/cms4py_first_generation/cms4py/handlers/dynamic_handler.py
 """
 
+import inspect
+
 import config
-import os, inspect
-import importlib.util
-from cms4py.utils import aiofile
 from cms4py import http
 from cms4py.cache import ModulesCacheManager
 
