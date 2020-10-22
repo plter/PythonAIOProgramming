@@ -7,6 +7,7 @@ import os, inspect
 import importlib.util
 from cms4py.utils import aiofile
 from cms4py import http
+from cms4py.cache import ModulesCacheManager
 
 
 async def handle_dynamic_request(scope, receive, send) -> bool:
@@ -25,18 +26,10 @@ async def handle_dynamic_request(scope, receive, send) -> bool:
     action_name = config.DEFAULT_ACTION
     if tokens_len >= 3:
         action_name = tokens[2] or config.DEFAULT_ACTION
-    controller_file = os.path.join(
-        config.CONTROLLERS_ROOT, f"{controller_name}.py"
-    )
 
-    controller_object = None
-    # 如果文件存在，尝试将该文件导入为模块
-    if await aiofile.exists(controller_file):
-        # 根据浏览器请求路径导入指定的模块
-        controller_object = importlib.import_module(
-            f"{config.APP_DIR_NAME}.{config.CONTROLLERS_DIR_NAME}.{controller_name}"
-        )
-        pass
+    controller_object = await ModulesCacheManager.get_instance().get_data(
+        f"{config.APP_DIR_NAME}.{config.CONTROLLERS_DIR_NAME}.{controller_name}"
+    )
 
     if controller_object:
         # 根据 action_name 获取指定的成员
