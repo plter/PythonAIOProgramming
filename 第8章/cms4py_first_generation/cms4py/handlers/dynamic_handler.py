@@ -40,6 +40,9 @@ async def handle_dynamic_request(scope, receive, send) -> bool:
             res = http.Response(req, send)
             req._controller = controller_name
             req._action = action_name
+
+            # 将 action 后的路径参数记录在 req.args 中
+            req._args = tokens[3:] if len(tokens) > 3 else []
             # 如果 action 是类定义，则先将类实例化再执行
             if inspect.isclass(action):
                 await action()(req, res)

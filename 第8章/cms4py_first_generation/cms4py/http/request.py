@@ -59,6 +59,8 @@ class Request:
         self._controller = None
         # 该变量用于记录请求的函数名
         self._action = None
+        # 该变量用于记录路径参数
+        self._args = None
         pass
 
     @property
@@ -171,4 +173,20 @@ class Request:
     def path(self) -> str:
         return self._path
 
-    pass
+    @property
+    def args(self):
+        """
+        获取所有的路径参数
+        :return:
+        """
+        return self._args
+
+    def arg(self, index):
+        """
+        返回指定位置的值或者 None
+        :param index:
+        :return:
+        """
+        return self.args[index] \
+            if self.args and len(self.args) > index \
+            else None
