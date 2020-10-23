@@ -1,8 +1,10 @@
 """
 第8章/cms4py_first_generation/app/controllers/default.py
 """
+from cms4py.cache import cache
 
 
+@cache(expire=5)
 async def index(req, res):
     await res.end(b"Home page")
     pass
@@ -14,5 +16,6 @@ class hello:
     运算符以接受调用操作
     """
 
+    @cache(expire=5)
     async def __call__(self, req, res):
         await res.end(b"Hello cms4py")
