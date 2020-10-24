@@ -4,6 +4,9 @@
 
 import config
 import re
+from cms4py.utils.log import Cms4pyLog
+from cms4py.utils import url_helper
+from urllib.parse import unquote
 
 
 class Request:
@@ -30,14 +33,20 @@ class Request:
         # 将原始请求头数据装进 self._headers，便于后续使用
         self._copy_headers()
         # 记录原始请求头中的可接受的语言列表数据
-        self._raw_accept_languages = self.get_header(b'accept-language')
+        self._raw_accept_languages = self.get_header(
+            b'accept-language'
+        )
         # 用正则表达将可接受的语言截取出来转成数组
-        self._accept_languages = re.compile(b"[a-z]{2}-[A-Z]{2}").findall(
+        self._accept_languages = re.compile(
+            b"[a-z]{2}-[A-Z]{2}"
+        ).findall(
             self._raw_accept_languages
         ) if self._raw_accept_languages else []
 
         lang: bytes = config.LANGUAGE or (
-            self._accept_languages[0] if len(self._accept_languages) > 0 else b'en-US'
+            self._accept_languages[0] if len(
+                self._accept_languages
+            ) > 0 else b'en-US'
         )
         # 记录将要使用的语言种类
         self._language = lang.decode("utf-8")
@@ -61,6 +70,12 @@ class Request:
         self._action = None
         # 该变量用于记录路径参数
         self._args = None
+        # 记录浏览器端发来的数据内容
+        self._body = b''
+        # 路径中的参数
+        self._query_vars = {}
+        # 协议内容中的参数
+        self._body_vars = {}
         pass
 
     @property
@@ -190,3 +205,213 @@ class Request:
         return self.args[index] \
             if self.args and len(self.args) > index \
             else None
+
+    @property
+    def body(self) -> bytes:
+        """
+        获取前端发来的数据
+        :return:
+        """
+        return self._body
+
+    @property
+    def query_vars(self):
+        """
+        获取所有URL中的参数对
+        :return:
+        """
+        return self._query_vars
+
+    def get_query_vars(self, key: bytes) -> list:
+        """
+        根据键名获得对应的所有的值
+        :param key:
+        :return:
+        """
+        return self.query_vars[key] if key in self.query_vars else None
+
+    def get_query_var(self, key: bytes, default_value=b'') -> bytes:
+        """
+        根据键名获得与之匹配的第一个值
+        :param key:
+        :param default_value:
+        :return:
+        """
+        return self._get_first_value_of_array_map(
+            self.query_vars, key
+        ) or default_value
+
+    @property
+    def body_vars(self):
+        """
+        获取通过HTTP消息体传来的参数
+        :return:
+        """
+        return self._body_vars
+
+    def get_body_vars(self, key: bytes) -> list:
+        """
+        根据键名获取对应的所有消息体参数
+        :param key:
+        :return:
+        """
+        return self._body_vars[key] if key in self._body_vars else None
+
+    def get_body_var(self, key: bytes, default_value=b'') -> bytes:
+        """
+        根据键名获得对应的第一个消息体参数
+        :param key:
+        :param default_value:
+        :return:
+        """
+        return self._get_first_value_of_array_map(
+            self.body_vars, key
+        ) or default_value
+
+    def get_var(self, key: bytes, default_value=b'') -> bytes:
+        """
+        根据键名获取对应的第一个参数，该函数会自动从URL中和消息体中取参数
+        :param key:
+        :param default_value:
+        :return:
+        """
+        if self.method == "GET":
+            return self.get_query_var(
+                key, default_value
+            )
+        elif self.method == 'POST':
+            return self.get_body_var(
+                key, default_value
+            ) or self.get_query_var(
+                key, default_value
+            )
+        else:
+            return default_value
+
+    def get_var_as_str(
+            self, key: bytes,
+            default_value='',
+            charset=config.GLOBAL_CHARSET
+    ) -> str:
+        """
+        以指定的编码方式获取参数
+        :param key:
+        :param default_value:
+        :param charset:
+        :return:
+        """
+        var_bytes = self.get_var(key)
+        if var_bytes:
+            return unquote(var_bytes.decode(charset))
+        else:
+            return default_value
+
+    async def _parse_form(self):
+        """
+        解析表单，该函数由cms4py框架内部调用，应用层不应该调用此函数
+        :return:
+        """
+
+        # TODO 目前实现仅支持GET方法与POST方法，需要逐步完善
+        #  并支持所有的 HTTP 方法
+        if self.query_string:
+            # 尝试从 URL 中解析参数
+            self._query_vars = url_helper.parse_url_pairs(
+                self.query_string
+            )
+        if self.method == "POST":
+            # 如果是 POST 方式，尝试读取消息体
+            while True:
+                message = await self._receive()
+                # TODO 需要实现数据限制机制以防攻击
+                self._body += message["body"] if 'body' in message else b''
+                if "more_body" not in message or not message["more_body"]:
+                    break
+            if self.content_type:
+                # 如果是 application/x-www-form-urlencoded 编码方式，
+                # 则尝试以 URL 参数对的方式解析
+                if self.content_type.startswith(
+                        b'application/x-www-form-urlencoded'
+                ):
+                    self._body_vars = url_helper.parse_url_pairs(
+                        self._body
+                    )
+                # 如果是 multipart/form-data 则当成表单数据解析，可用
+                # 于处理文件上传请求
+                elif self.content_type.startswith(b"multipart/form-data"):
+                    # 该正则用于取出数据分割符
+                    boundary_search_result = re.search(
+                        b"multipart/form-data; boundary=(.+)",
+                        self.content_type
+                    )
+                    if boundary_search_result:
+                        # 取出分割符
+                        boundary = boundary_search_result.group(1)
+                        if self._body:
+                            # 用分割符分割表单数据
+                            body_results = self.body.split(
+                                b'\r\n--' + boundary
+                            )
+                            if body_results:
+                                for body_result in body_results:
+                                    # 分割后的每一条数据都有头部和内容，
+                                    # 头部和内容以 \r\n\r\n 分开，
+                                    # 头部是字符串，描述该数据的信息
+                                    # 内容部分是二进制数据
+                                    split_index = body_result \
+                                        .find(b'\r\n\r\n')
+                                    if split_index != -1:
+                                        # 获取头部信息字符串
+                                        head = body_result[:split_index]
+                                        # 获取内容
+                                        content = body_result[
+                                                  split_index + 4:]
+                                        # 取出该字段的名称
+                                        name_result = re.search(
+                                            b'Content-Disposition: form-data; name="([^"]+)"',
+                                            head, re.M
+                                        )
+                                        if name_result:
+                                            name = name_result.group(1)
+                                            if name not in self._body_vars:
+                                                self._body_vars[name] = []
+                                            # 如果是文件，则取出该字段的文件名
+                                            file_name_result = re.search(
+                                                b' filename="([^"]+)"',
+                                                head, re.M
+                                            )
+                                            file_name = file_name_result \
+                                                .group(1) if \
+                                                file_name_result else None
+                                            if not file_name:
+                                                # 如果不是文件，值为普通字符串
+                                                self._body_vars[name] \
+                                                    .append(content)
+                                            else:
+                                                file_object = {
+                                                    'name': name,
+                                                    'filename': file_name,
+                                                    'content': content
+                                                }
+                                                content_type_result = \
+                                                    re.search(
+                                                        b'Content-Type: (.*)',
+                                                        head, re.M
+                                                    )
+                                                if content_type_result:
+                                                    file_object[
+                                                        'content-type'
+                                                    ] = content_type_result.group(1)
+                                                # 如果是文件，则值为文件对象
+                                                self._body_vars[name].append(file_object)
+                                        pass
+                                    else:
+                                        break
+                else:
+                    Cms4pyLog.get_instance().info(
+                        f"Request content-type is {self.content_type}, we do not parse"
+                    )
+            else:
+                Cms4pyLog.get_instance().warning("content-type is None")
+            pass
+        pass
