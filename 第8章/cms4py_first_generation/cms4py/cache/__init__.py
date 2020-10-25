@@ -6,6 +6,7 @@ from cms4py.cache.base_cache_manager import CachedDataWrapper
 from cms4py.cache.base_cache_manager import BaseCacheManager
 from cms4py.cache.modules_cache_manager import ModulesCacheManager
 from cms4py.cache.page_cache_manager import PageCacheManager
+from cms4py.cache.session_cache_manager import SessionCacheManager
 
 from cms4py.utils.log import Cms4pyLog
 import datetime

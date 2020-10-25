@@ -26,6 +26,11 @@ class Response:
         self.content_type = b'text/html'
         # 添加自定义的服务器名称信息
         self.add_header(b'server', config.SERVER_NAME)
+        # 将 Session ID 写到 Cookie 中
+        self.add_set_cookie(
+            config.CMS4PY_SESSION_ID_KEY,
+            self._request.session_id
+        )
         pass
 
     @property
@@ -107,3 +112,31 @@ class Response:
         })
         self._body = data
         self._body_sent = True
+
+    def add_set_cookie(
+            self,
+            name: bytes,
+            value: bytes,
+            max_age: int = 604800,
+            path: bytes = b'/'
+    ):
+        """
+        添加设置 Cookie 的协议头
+        :param name: Cookie的名称
+        :param value: Cookie的值
+        :param max_age: Cookie的有效期
+        :param path: 为该Cookie指定路径
+        :return:
+        """
+
+        self.add_header(
+            b'set-cookie',
+            "{}={}; max-age={}; path={}; SameSite=Lax".format(
+                name.decode(config.GLOBAL_CHARSET),
+                value.decode(config.GLOBAL_CHARSET),
+                max_age,
+                path.decode(config.GLOBAL_CHARSET)
+            ).encode(
+                config.GLOBAL_CHARSET
+            )
+        )

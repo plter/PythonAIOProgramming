@@ -55,4 +55,4 @@ APP_VERSION = '2020.02.15'
 GLOBAL_CHARSET = 'utf-8'
 
 # 在 Cookie 中存储 Session ID 所使用的键名
-CMS4PY_SESSION_ID_KEY = "cms4py_session_id"
+CMS4PY_SESSION_ID_KEY = b"cms4py_session_id"

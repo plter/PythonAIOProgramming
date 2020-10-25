@@ -3,10 +3,11 @@
 """
 
 import config
-import re
+import re, uuid
 from cms4py.utils.log import Cms4pyLog
 from cms4py.utils import url_helper
 from urllib.parse import unquote
+from cms4py.cache import SessionCacheManager
 
 
 class Request:
@@ -76,6 +77,13 @@ class Request:
         self._query_vars = {}
         # 协议内容中的参数
         self._body_vars = {}
+
+        # 用于存放 Cookie 字符串
+        self._cookie = None
+        # 用于存放 Cookie 键值对
+        self._cookie_map = {}
+        # 用于记录 session_id
+        self._session_id = b''
         pass
 
     @property
@@ -415,3 +423,83 @@ class Request:
                 Cms4pyLog.get_instance().warning("content-type is None")
             pass
         pass
+
+    @property
+    def cookie(self) -> bytes:
+        """
+        获取 Cookie 字符串
+        :return:
+        """
+        if not self._cookie:
+            # 从 header 里取出 Cookie
+            self._cookie = self.get_header(b'cookie')
+        return self._cookie
+
+    def get_cookie(self, key: bytes, default_value=None) -> bytes:
+        """
+        根据键名获取 Cookie 值
+        :param key:
+        :param default_value:
+        :return:
+        """
+        if not self._cookie_map:
+            self._cookie_map = {}
+            cookie = self.cookie
+            if cookie:
+                tokens = cookie.split(b"; ")
+                for t in tokens:
+                    kv = t.split(b"=")
+                    if len(kv) == 2:
+                        self._cookie_map[kv[0]] = kv[1]
+        return self._cookie_map[key] if key in self._cookie_map else default_value
+
+    @property
+    def session_id(self) -> bytes:
+        """
+        获取 Session ID
+        :return:
+        """
+
+        # 从 Cookie 中取得 Session ID 的值
+        self._session_id = self.get_cookie(
+            config.CMS4PY_SESSION_ID_KEY,
+            None
+        )
+        # 如果不存在，生成新的 Session ID
+        if not self._session_id:
+            self._session_id = uuid.uuid4().hex.encode(
+                config.GLOBAL_CHARSET
+            )
+        return self._session_id
+
+    async def session(self):
+        """
+        根据 Session ID 获得对应的 Session 数据
+        :return:
+        """
+        return await SessionCacheManager.get_instance().get_data(
+            self.session_id
+        )
+
+    async def get_session(self, key: str, default_value=None):
+        """
+        从 Session 中根据键名获取对应的值
+        :param key:
+        :param default_value:
+        :return:
+        """
+        session_dict = await SessionCacheManager.get_instance() \
+            .get_data(self.session_id)
+        return session_dict[key] \
+            if key in session_dict else default_value
+
+    async def set_session(self, key: str, value):
+        """
+        将键值对写入到 Session 中
+        :param key:
+        :param value:
+        :return:
+        """
+        session_dict = await SessionCacheManager.get_instance() \
+            .get_data(self.session_id)
+        session_dict[key] = value
