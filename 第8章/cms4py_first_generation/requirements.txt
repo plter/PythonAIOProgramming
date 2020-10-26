@@ -1,2 +1,5 @@
 Jinja2==2.11.2
 uvicorn==0.12.2
+
+aiomysql==0.0.20
+pydal==20200910.1
