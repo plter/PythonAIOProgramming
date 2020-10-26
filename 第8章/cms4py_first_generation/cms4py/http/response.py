@@ -4,6 +4,8 @@
 
 import config
 from cms4py.http.request import Request
+from cms4py.utils import translator
+from cms4py.template_engine import TemplateEngine
 
 
 class Response:
@@ -31,6 +33,9 @@ class Response:
             config.CMS4PY_SESSION_ID_KEY,
             self._request.session_id
         )
+
+        # 用于存放语言表
+        self._language_dict = None
         pass
 
     @property
@@ -139,4 +144,61 @@ class Response:
             ).encode(
                 config.GLOBAL_CHARSET
             )
+        )
+
+    async def _load_language_dict(self):
+        """
+        加载语言表
+        :return:
+        """
+        if not self._language_dict:
+            self._language_dict = await translator \
+                .get_language_dict(self._request.language)
+
+    def translate(self, words):
+        """
+        在不使用异步IO的情况下进行翻译
+        :param words:
+        :return:
+        """
+        if self._language_dict and words in self._language_dict:
+            words = self._language_dict[words]
+        return words
+
+    async def render_string(self, view: str, **kwargs) -> bytes:
+        """
+        渲染一段字符串
+        :param view: 将被渲染的模板字符串
+        :param kwargs: 向模板渲染过程传参数
+        :return: 被渲染之后的数据
+        """
+
+        # 该参数用于在模板渲染过程中访问配置信息
+        kwargs['config'] = config
+        # 该参数用于在模板渲染过程中访问 Response 对象
+        kwargs['response'] = self
+        # 该参数用于在模板渲染过程中访问 Request 对象
+        kwargs['request'] = self._request
+        # 该参数用于在模板渲染过程中访问翻译工具对象
+        kwargs["_"] = self.translate
+        # 该参数用于在模板渲染过程中访问翻译工具对象
+        kwargs["T"] = self.translate
+        # 该参数用于在模板渲染过程中访问 Session
+        kwargs['session'] = await self._request.session()
+        data = await TemplateEngine.get_instance().render(
+            view, **kwargs
+        )
+        return data
+
+    async def render(self, view: str, **kwargs):
+        """
+        渲染模板文件，并返回给浏览器端
+        :param view:
+        :param kwargs:
+        :return:
+        """
+        if self._body_sent:
+            return
+        await self.end(
+            await self.render_string(view, **kwargs)
         )

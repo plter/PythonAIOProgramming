@@ -46,10 +46,14 @@ async def handle_dynamic_request(scope, receive, send) -> bool:
             # 如果 action 是类定义，则先将类实例化再执行
             if inspect.isclass(action):
                 await req._parse_form()
+                # 预加载语言表
+                await res._load_language_dict()
                 await action()(req, res)
             # 否则把 action 当作函数对待直接执行
             else:
                 await req._parse_form()
+                # 预加载语言表
+                await res._load_language_dict()
                 await action(req, res)
             data_sent = res.body_sent
     return data_sent
