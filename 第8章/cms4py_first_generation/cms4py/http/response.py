@@ -202,3 +202,27 @@ class Response:
         await self.end(
             await self.render_string(view, **kwargs)
         )
+
+    async def redirect(self, target: str, primary=False):
+        """
+        页面重定向
+        :param target: 目标地址
+        :param primary: 是否为永久重定向
+        :return:
+        """
+        url = target.encode(config.GLOBAL_CHARSET)
+        status = 302 if not primary else 301
+        self.add_header(b'location', url)
+        await self.send_header(status)
+        await self.end(
+            b"<html lang=\"en\">"
+            b"  <head>"
+            b"      <meta charset=\"UTF-8\">"
+            b"      <title>Redirecting</title>"
+            b"  </head>"
+            b"  <body>"
+            b"      Redirecting to <a href='" + url + b"'>" + url + b"</a>" +
+            b"  </body>"
+            b"</html>"
+        )
+        pass
