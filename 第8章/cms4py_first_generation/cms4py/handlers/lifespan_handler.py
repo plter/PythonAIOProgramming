@@ -2,6 +2,7 @@
 第8章/cms4py_first_generation/cms4py/handlers/lifespan_handler.py
 """
 from cms4py.utils.log import Cms4pyLog
+from cms4py.socketio import load_sio_files
 
 
 async def handle_lifespan(scope, receive, send):
@@ -10,6 +11,7 @@ async def handle_lifespan(scope, receive, send):
         message = await receive()
         # 如果读取消息类型为 lifespan.startup，则进行初始化操作
         if message['type'] == 'lifespan.startup':
+            await load_sio_files()
             # 在初始化完成后，向 asgi 环境发送启动完成消息
             await send({'type': 'lifespan.startup.complete'})
             Cms4pyLog.get_instance().info("Server started")

@@ -22,6 +22,8 @@ STATIC_FILES_ROOT = os.path.join(APP_ROOT, "static")
 VIEWS_ROOT = os.path.join(APP_ROOT, 'views')
 # 语言文件根目录
 LANGUAGES_ROOT = os.path.join(APP_ROOT, 'languages')
+# Socket.IO 文件所在目录
+SOCKET_IO_DIR_NAME = "sio"
 # 默认语言
 LANGUAGE = None  # "zh-CN", "en-US"
 
