@@ -8,6 +8,23 @@ from cms4py.utils.log import Cms4pyLog
 from cms4py.handlers import static_file_handler
 from cms4py.handlers import dynamic_handler
 from cms4py.socketio import sio_asgi_app
+from asgiref.wsgi import WsgiToAsgi
+
+
+# 定义 WSGI 程序
+def wsgi(environ, start_response):
+    status = '200 OK'
+    output = b'Hello WSGI in WSGI!'
+
+    response_headers = [('Content-type', 'text/plain'),
+                        ('Content-Length', str(len(output)))]
+    start_response(status, response_headers)
+
+    return [output]
+
+
+# 将 WSGI 包装为 ASGI
+wsgi_to_asgi_app = WsgiToAsgi(wsgi)
 
 
 async def application(scope, receive, send):
@@ -19,6 +36,10 @@ async def application(scope, receive, send):
         # 如果路径以 /socket.io 开始，则使用 socket.io app 进行处理
         if scope['path'].startswith("/socket.io"):
             return await sio_asgi_app(scope, receive, send)
+
+        # 如果路径以 /wsgi 开始，则由 asgiref 将请求转交给wsgi程序处理
+        if scope['path'].startswith("/wsgi"):
+            return await wsgi_to_asgi_app(scope, receive, send)
 
         data_sent = await dynamic_handler.handle_dynamic_request(
             scope, receive, send
