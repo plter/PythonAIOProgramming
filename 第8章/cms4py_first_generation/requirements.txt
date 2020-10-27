@@ -1,4 +1,5 @@
 aiomysql==0.0.20
+asgiref==3.3.0
 cffi==1.14.3
 click==7.1.2
 cryptography==3.2
