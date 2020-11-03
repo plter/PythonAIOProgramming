@@ -3,7 +3,9 @@
 """
 
 from app.db.async_pydal.dal import AsyncDAL
-from pydal import Field
+from . import table_auth_group
+from . import table_auth_membership
+from . import table_auth_user
 
 
 class Db:
@@ -20,11 +22,10 @@ class Db:
         self._async_pydal = await AsyncDAL.create(
             "db", "root", "rootpw", "home_sharing"
         )
-        self._async_pydal.define_table(
-            "student",
-            Field("name"),
-            Field("age")
-        )
+
+        table_auth_user.define_table(self._async_pydal)
+        table_auth_group.define_table(self._async_pydal)
+        table_auth_membership.define_table(self._async_pydal)
         pass
 
     @property

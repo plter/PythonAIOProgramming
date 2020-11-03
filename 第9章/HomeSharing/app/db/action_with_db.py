@@ -16,6 +16,8 @@ class ActionWithDb:
         db_manager = await Db.get_instance()
         # 通过连接池建立一个连接
         conn = await db_manager.async_pydal.acquire()
+        # 自动提交数据更改
+        await conn.autocommit(True)
         # 获取数据库对象用于操作数据库
         self.db = await conn.cursor()
 

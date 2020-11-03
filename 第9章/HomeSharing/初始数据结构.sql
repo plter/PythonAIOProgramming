@@ -39,6 +39,7 @@ CREATE TABLE `auth_user` (
   `user_phone` varchar(16) NOT NULL,
   `reg_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `user_phone` (`user_phone`),
   UNIQUE KEY `user_name` (`user_name`) USING HASH,
   UNIQUE KEY `user_email` (`user_email`) USING HASH
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
