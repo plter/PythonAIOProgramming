@@ -6,6 +6,7 @@ from app.db.action_with_db import ActionWithDb
 from cms4py.http import Request, Response
 import datetime, re
 from pymysql.err import IntegrityError
+from app.db import auth
 
 
 class login(ActionWithDb):
@@ -105,6 +106,7 @@ class register(ActionWithDb):
             await res.end(b"Method not supported")
 
 
+@auth.require_login()
 async def profile(req, res):
     await res.render("user/profile.html", title="用户信息")
 
