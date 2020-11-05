@@ -82,3 +82,36 @@ def require_membership(*roles):
         return inner
 
     return outer
+
+
+async def add_membership(db, request, response, user_id, role):
+    """
+    添加用户关系
+    :param db:
+    :param request:
+    :param response:
+    :param user_id: 指定的用户id
+    :param role: 指定的权限组名
+    :return:
+    """
+    group = (await db(db.auth_group.role == role).select()).first()
+    if group:
+        await db.auth_membership.insert(user_id=user_id, group_id=group.id)
+
+
+async def remove_membership(db, request, response, user_id, role):
+    """
+    移除用户关系
+    :param db:
+    :param request:
+    :param response:
+    :param user_id: 用户id
+    :param role: 权限组名
+    :return:
+    """
+    group = (await db(db.auth_group.role == role).select()).first()
+    if group:
+        await db(
+            (db.auth_membership.user_id == user_id) &
+            (db.auth_membership.group_id == group.id)
+        ).delete()
