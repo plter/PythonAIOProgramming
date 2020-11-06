@@ -1,0 +1,21 @@
+<!-- 第9章/HomeSharing/app/views/house/by_id.html -->
+{% extends "layout.html" %}
+{% block body %}
+<div style="margin-top:1rem;">
+    {% if house %}
+    <h1 style="font-size:14pt;font-weight:bold;">
+        {{ house['res_title'] }}
+    </h1>
+    <div>
+        <span style="font-weight:bold;">发布者：</span>{{ owner['user_name'] }}
+        <span style="font-weight:bold;">手机号：</span>{{ owner['user_phone'] }}
+        <span style="font-weight:bold;">发布时间：</span>{{ house['pub_time'] }}
+    </div>
+    <div style="margin-top:1rem;">
+        {{ house['res_content'] }}
+    </div>
+    {% else %}
+    <div>该房源不存在</div>
+    {% endif %}
+</div>
+{% endblock %}

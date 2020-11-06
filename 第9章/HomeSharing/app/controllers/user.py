@@ -114,3 +114,24 @@ async def profile(req, res):
 async def logout(req: Request, res: Response):
     await req.set_session("current_user", None)
     await res.redirect("/user/login")
+
+
+class pub_house(ActionWithDb):
+    @auth.require_login()
+    async def execute(self, req: Request, res):
+        if req.method == "GET":
+            await res.render("user/pub_house.html", title="发布房源")
+        elif req.method == 'POST':
+            user = await req.get_session("current_user")
+            title = req.get_var_as_str(b"house_res_title")
+            content = req.get_var_as_str(b'house_res_content')
+            await self.db.house_res.insert(
+                res_title=title,
+                res_content=content,
+                pub_time=datetime.datetime.now(),
+                owner_id=user['id']
+            )
+            await res.redirect(f"/house/by_id/{self.db.lastrowid}")
+            pass
+        else:
+            await res.end(b"Method not supported")

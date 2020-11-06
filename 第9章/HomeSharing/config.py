@@ -20,6 +20,10 @@ CONTROLLERS_ROOT = os.path.join(APP_ROOT, CONTROLLERS_DIR_NAME)
 STATIC_FILES_ROOT = os.path.join(APP_ROOT, "static")
 # 模板文件根目录
 VIEWS_ROOT = os.path.join(APP_ROOT, 'views')
+# 上传文件的根路径，用于浏览器访问
+UPLOAD_FILE_BASE_URI = '/static_files/uploads'
+# 上传文件目录
+UPLOADS_ROOT = os.path.join(STATIC_FILES_ROOT, "static_files", "uploads")
 # 语言文件根目录
 LANGUAGES_ROOT = os.path.join(APP_ROOT, 'languages')
 # Socket.IO 文件所在目录
