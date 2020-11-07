@@ -8,6 +8,7 @@ from . import table_auth_membership
 from . import table_auth_user
 from . import table_photo
 from . import table_house_res
+from . import table_house_res_comment
 
 
 class Db:
@@ -30,6 +31,7 @@ class Db:
         table_auth_membership.define_table(self._async_pydal)
         table_photo.define_table(self._async_pydal)
         table_house_res.define_table(self._async_pydal)
+        table_house_res_comment.define_table(self._async_pydal)
         pass
 
     @property
