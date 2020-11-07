@@ -3,6 +3,7 @@
 """
 from app.db import data_grid
 from app.db.action_with_db import ActionWithDb
+from cms4py.http import Request
 
 
 class by_id(ActionWithDb):
@@ -49,5 +50,43 @@ class all(ActionWithDb):
         await res.render(
             "house/all.html",
             title="房源", grid=grid
+        )
+        pass
+
+
+class search(ActionWithDb):
+    async def execute(self, req: Request, res):
+        keyword = req.get_var_as_str(b"k")
+
+        async def row_render(db, req, res, row, fields):
+            return await res.render_string(
+                "house/all_row.html",
+                row=row
+            )
+
+        db = self.db
+        grid = await data_grid.grid(
+            db, req, res,
+            # 根据指定的关键字查询数据库
+            (
+                    (db.house_res.res_title.like(f"%{keyword}%")) |
+                    (db.house_res.res_content.like(f"%{keyword}%"))
+            ) &
+            (db.house_res.owner_id == db.auth_user.id),
+            fields=[
+                # 只显示指定的字段
+                db.house_res.id,
+                db.house_res.res_title,
+                db.house_res.pub_time,
+                db.auth_user.user_name,
+                db.auth_user.user_phone,
+            ],
+            order_by=~db.house_res.id,
+            row_render=row_render,
+            header_render=lambda *args: ""
+        )
+        await res.render(
+            "house/all.html",
+            title=f"搜索结果 - {keyword}", grid=grid
         )
         pass
