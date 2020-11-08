@@ -1,0 +1,8 @@
+# 第2章/aio_http_server/docker-compose.yml
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8888:8888"

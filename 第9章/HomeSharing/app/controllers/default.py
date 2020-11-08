@@ -4,4 +4,4 @@ from cms4py.http import Request, Response
 
 class index(ActionWithDb):
     async def execute(self, req: Request, res: Response):
-        await res.render("default/index.html", title="房屋直租")
+        await res.redirect("/house/all")
