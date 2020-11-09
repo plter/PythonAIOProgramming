@@ -1,0 +1,17 @@
+# 第3章/aiohttp_simple_server/docker-compose.yml
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    # 指定该容器会在意外停止后自动重启
+    restart: always
+    # 配置路径映射，将当前目录映射到容器中的 /opt 目录
+    volumes:
+      - ".:/opt/"
+    # 指定容器中应用程序的工作目录为 /opt
+    working_dir: "/opt/"
+    # 配置容器启动时执行的命令，这里我们启动服务器
+    command: python3 ./server.py

@@ -1,0 +1,62 @@
+<!-- 第3章/aiohttp_template_pages/tpls/layout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--
+      要求传来一个名为 title 的参数，则不同的页面传来不同
+      的值以实现不同页面拥有不同标题的效果
+    -->
+    <title>
+        {{ title }}
+    </title>
+
+    <!--
+     引用前端页面的依赖项，使用的前端界面框架是 Bootstrap ，
+     因为 Bootstrap 依赖 jQuery ，所以我们也引用了 jQuery ，
+     并且 jQuery 的引用语句必须写在 Bootstrap 引用语句的前面
+     -->
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light" style="justify-content:start">
+    <!-- 配置顶部菜单 -->
+    <a class="navbar-brand" href="/">小云站</a>
+
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <!--
+             使用了模板引擎支持的判断语句，根据当前页面路径选择性
+             地给菜单项添加 active 类，以使它处于激活状态，这里
+             需要注意的是我们使用了 request 这个参数，意味着在渲
+             染时需要传入 request 对象
+             -->
+            <a class="nav-link {% if request.path=='/' %}active{% endif %}"
+               href="/">
+                首页
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path=='/news' %}active{% endif %}"
+               href="/news">
+                动态
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path=='/blog' %}active{% endif %}"
+               href="/blog">
+                博客
+            </a>
+        </li>
+    </ul>
+</nav>
+<div class="container-fluid">
+    <!-- 声明一个名为 body 的代码块，子模板可以重写该
+    代码块以自定义页面的内容 -->
+    {% block body %}
+    {% endblock %}
+</div>
+</body>
+</html>
