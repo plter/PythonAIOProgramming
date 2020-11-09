@@ -1,3 +1,6 @@
+"""
+第3章/aiohttp_upload_file/server.py
+"""
 from aiohttp import web
 import os, datetime, aiofile, aiohttp_jinja2, jinja2
 
@@ -5,7 +8,9 @@ APP_ROOT = os.path.dirname(__file__)
 app = web.Application()
 aiohttp_jinja2.setup(
     app,
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "tpls"))
+    loader=jinja2.FileSystemLoader(
+        os.path.join(os.path.dirname(__file__), "tpls")
+    )
 )
 routes = web.RouteTableDef()
 
@@ -26,7 +31,9 @@ async def login(request: web.Request):
     # 用当前时间当做要保存的文件名
     file_name = f"{datetime.datetime.now().timestamp()}"
     # 以写入二进制数据（wb）的方式打开文件
-    file = await aiofile.open_async(os.path.join(APP_ROOT, "uploads", file_name), "wb")
+    file = await aiofile.open_async(
+        os.path.join(APP_ROOT, "uploads", file_name), "wb"
+    )
     # 将数据读取出来并保存到目标文件中
     await file.write(file_object.file.read())
     # 关闭文件IO

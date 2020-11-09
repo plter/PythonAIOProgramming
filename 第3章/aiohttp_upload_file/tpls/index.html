@@ -1,5 +1,9 @@
+<!-- 第3章/aiohttp_upload_file/tpls/index.html -->
 {% extends "layout.html" %}
 {% block body %}
+<!-- 指定提交表单的方式为POST，提交的目标页面是 /upload ，
+并且编码方式为 multipart/form-data ，上传文件时，这几项
+必须这么配置，否则后端将无法正确接收数据 -->
 <form method="post" action="/upload" enctype="multipart/form-data">
     <div class="card" style="margin: 2rem auto 0 auto;width:400px;">
         <div class="card-header">上传图片</div>
@@ -7,6 +11,8 @@
             <div class="form-group row">
                 <label for="inputName" class="col-sm-2 col-form-label">图片</label>
                 <div class="col-sm-10">
+                    <!-- 指定输入框的类型为 file ，这会在
+                    页面中呈现一个浏览本地文件的按钮 -->
                     <input type="file" name="file" id="inputName">
                 </div>
             </div>

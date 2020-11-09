@@ -1,3 +1,6 @@
+"""
+第3章/aiohttp_submitform/server.py
+"""
 from aiohttp import web
 import jinja2
 import aiohttp_jinja2
@@ -21,6 +24,7 @@ async def index(request: web.Request):
 @routes.post("/login")
 @aiohttp_jinja2.template("login.html")
 async def login(request: web.Request):
+    # 读取表单数据
     user = await request.post()
     return dict(title="登录结果", user=user)
 

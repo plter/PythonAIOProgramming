@@ -1,3 +1,6 @@
+"""
+第3章/aiohttp_ssession_counter/server.py
+"""
 import base64
 
 from aiohttp import web
@@ -11,7 +14,8 @@ routes = web.RouteTableDef()
 @routes.get('/')
 async def index(request: web.Request):
     session = await get_session(request)
-    session['count'] = (session['count'] if 'count' in session else 0) + 1
+    session['count'] = \
+        (session['count'] if 'count' in session else 0) + 1
     return web.Response(text=f"Count is {session['count']}")
 
 

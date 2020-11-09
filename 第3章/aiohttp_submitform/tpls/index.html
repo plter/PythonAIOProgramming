@@ -1,5 +1,8 @@
+<!-- 第3章/aiohttp_submitform/tpls/index.html -->
 {% extends "layout.html" %}
 {% block body %}
+<!-- 配置该表单提交到方式为post方式，提交的目标页面路径
+是 /login ，并且以url参数对的形式提交数据 -->
 <form method="post" action="/login" enctype="application/x-www-form-urlencoded">
     <div class="card" style="margin: 2rem auto 0 auto;width:300px;">
         <div class="card-header">登录</div>
@@ -7,12 +10,14 @@
             <div class="form-group row">
                 <label for="inputName" class="col-sm-3 col-form-label">姓名</label>
                 <div class="col-sm-9">
+                    <!-- 指定姓名输入框的字段名为 name  -->
                     <input type="text" name="name" class="form-control" id="inputName">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="inputAge" class="col-sm-3 col-form-label">年龄</label>
                 <div class="col-sm-9">
+                    <!-- 指定年龄输入框的字段名为 age  -->
                     <input type="number" name="age" class="form-control" id="inputAge">
                 </div>
             </div>
