@@ -1,0 +1,14 @@
+# 第5章/daphne_asgi_app/docker-compose.yml
+version: "3"
+
+services:
+  web:
+    build: .
+    restart: always
+    tty: true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ".:/opt/"
+    working_dir: "/opt/"
+    command: daphne -b 0.0.0.0 asgi:app
