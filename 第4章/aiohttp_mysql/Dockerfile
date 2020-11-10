@@ -1,3 +1,4 @@
+# 第4章/aiohttp_mysql/Dockerfile
 FROM python:3.8-slim
 RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple aiohttp
 RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple aiomysql

@@ -1,3 +1,6 @@
+"""
+第4章/aiohttp_mysql/db.py
+"""
 from aiomysql.sa import create_engine, Engine
 import config
 

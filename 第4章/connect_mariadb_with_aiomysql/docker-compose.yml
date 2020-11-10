@@ -1,0 +1,27 @@
+# 第4章/connect_mariadb_with_aiomysql/docker-compose.yml
+version: '3'
+
+services:
+
+  # 数据库服务
+  db:
+    image: mariadb
+    # 该服务在系统启动后或者意外停止后自动启动
+    restart: always
+    environment:
+      # 配置数据库的 root 用户密码为 pwd
+      MYSQL_ROOT_PASSWORD: pwd
+    volumes:
+      # 将数据存储目录映射到宿主机当前目录下的 mariadb_data
+      - "./mariadb_data:/var/lib/mysql"
+    ports:
+      # 配置端口映射，MariaDB的默认端口号是3306，
+      # 配置该映射的目的是为了便于直接从开发机访问Docker容器
+      - 3306:3306
+
+  # 数据库管理服务
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

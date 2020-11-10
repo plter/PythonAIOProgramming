@@ -1,4 +1,4 @@
--- Adminer 4.7.7 MySQL dump
+-- 第4章/aiohttp_mysql/structure.sql
 
 SET NAMES utf8;
 SET time_zone = '+00:00';

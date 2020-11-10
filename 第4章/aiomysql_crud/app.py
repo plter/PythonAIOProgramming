@@ -1,3 +1,7 @@
+"""
+第4章/aiomysql_crud/app.py
+"""
+
 import asyncio, aiomysql
 
 
@@ -10,7 +14,10 @@ async def print_all_data(cur):
     # 计算字段个数
     field_range = range(len(cur.description))
     # 将字段名与原始结果映射生成对象数组
-    result = [{cur.description[i][0]: row[i] for i in field_range} for row in raw_data]
+    result = [
+        {cur.description[i][0]: row[i] for i in field_range}
+        for row in raw_data
+    ]
     print(result)
 
 
