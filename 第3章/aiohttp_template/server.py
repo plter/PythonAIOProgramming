@@ -20,7 +20,7 @@ routes = web.RouteTableDef()
 @routes.get('/')
 @aiohttp_jinja2.template("index.html")
 async def hello(request):
-    return dict(name="小云", age=20)
+    return dict(name="小云", age=21)
 
 
 app.add_routes(routes)

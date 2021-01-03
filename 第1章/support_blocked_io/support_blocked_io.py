@@ -3,7 +3,6 @@
 """
 import asyncio
 import time
-import concurrent.futures
 
 
 # 声明一个阻塞型任务
