@@ -372,8 +372,7 @@ class Request:
                                         # 获取头部信息字符串
                                         head = body_result[:split_index]
                                         # 获取内容
-                                        content = body_result[
-                                                  split_index + 4:]
+                                        content = body_result[split_index + 4:]
                                         # 取出该字段的名称
                                         name_result = re.search(
                                             b'Content-Disposition: form-data; name="([^"]+)"',
